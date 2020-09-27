@@ -7,6 +7,8 @@
     <Nullable>enable</Nullable>
     <WarningsAsErrors>nullable</WarningsAsErrors>
     <Authors>Jeff Erbrecht</Authors>
+    <TargetName>displays</TargetName>
+    <Copyright>(c) 2020 Jeff Erbrecht</Copyright>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
