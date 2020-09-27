@@ -16,17 +16,17 @@ namespace Displays
         private const char AbbreviationDisplayFile = 'd';
         private const string OptionDisplayFile = "display-file";
 
-        [Verb("record", HelpText = "Record current display configuration to file")]
+        [Verb("record", HelpText = "Record current Windows display configuration to file")]
         private class RecordOptions
         {
-            [Option(AbbreviationDisplayFile, OptionDisplayFile, Required = true, HelpText = "Save display config to this file (JSON)")]
+            [Option(AbbreviationDisplayFile, OptionDisplayFile, Required = true, HelpText = "Record display configuration to this file (JSON)")]
             public string OutputFile { get; set; } = string.Empty;
         }
 
-        [Verb("apply", HelpText = "Apply display configuration from file")]
-        private class ApplyOptions
+        [Verb("restore", HelpText = "Restore Windows display configuration from file")]
+        private class RestoreOptions
         {
-            [Option(AbbreviationDisplayFile, OptionDisplayFile, Required = true, HelpText = "Read display config from this file (JSON)")]
+            [Option(AbbreviationDisplayFile, OptionDisplayFile, Required = true, HelpText = "Read display configuration from this file (JSON)")]
             public string InputFile { get; set; } = string.Empty;
         }
 
@@ -45,10 +45,10 @@ namespace Displays
 
             try
             {
-                return parser.ParseArguments<RecordOptions, ApplyOptions>(args)
+                return parser.ParseArguments<RecordOptions, RestoreOptions>(args)
                     .MapResult(
                         (RecordOptions r) => Record(r),
-                        (ApplyOptions a) => Apply(a),
+                        (RestoreOptions s) => Restore(s),
                         errors => ExitCodeError);
             }
             catch (Win32Exception windowsException)
@@ -72,13 +72,13 @@ namespace Displays
             return ExitCodeOk;
         }
 
-        private int Apply(ApplyOptions options)
+        private int Restore(RestoreOptions options)
         {
             string fullPath = Path.GetFullPath(options.InputFile);
             string json = File.ReadAllText(fullPath);
             var inputConfig = JsonConvert.DeserializeObject<DisplayConfigInfo>(json, CreateJsonSettings());
             Api.SetDisplayConfig(inputConfig!, SetDisplayConfigFlags.Apply | SetDisplayConfigFlags.UseSuppliedDisplayConfig);
-            Console.WriteLine($"Applied display configuration from {fullPath}");
+            Console.WriteLine($"Restored display configuration from {fullPath}");
             return ExitCodeOk;
         }
 
